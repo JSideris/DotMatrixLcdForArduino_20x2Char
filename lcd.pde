@@ -1,3 +1,9 @@
+/*
+Copyright 2016 Joshua Sideris
+https://github.com/JSideris/
+Use for whatever you want. But use at own risk.
+*/
+
 //Don't forget to properly set these.
 #define pinVss 52
 #define pinVcc 50
