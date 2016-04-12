@@ -4,24 +4,44 @@ https://github.com/JSideris/
 Use for whatever you want. But use at own risk.
 */
 
-//Don't forget to properly set these.
-#define pinVss 52
-#define pinVcc 50
-#define pinVee 48
-#define pinRS 46
-#define pinRW 44
-#define pinEN 42
-#define pinD0 40
-#define pinD1 38
-#define pinD2 36
-#define pinD3 34
-#define pinD4 32
-#define pinD5 30
-#define pinD6 28
-#define pinD7 26
-#define pinLEDP 24
-#define pinLEDN 22
+//A bunch of defaults that were convenient for the Arduino Mega.
+int pinVss = 52;
+int pinVcc = 50;
+int pinVee = 48;
+int pinRS = 46;
+int pinRW = 44;
+int pinEN = 42;
+int pinD0 = 40;
+int pinD1 = 38;
+int pinD2 = 36;
+int pinD3 = 34;
+int pinD4 = 32;
+int pinD5 = 30;
+int pinD6 = 28;
+int pinD7 = 26;
+int pinLEDP = 24;
+int pinLEDN = 22;
 
+
+//Call this before init if you want to change the defaults.
+void setPins(int vss, int vcc, int vee, int rs, int rw, int en, int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int ledp, int ledn){
+  pinVss = vss;
+  pinVcc = vcc;
+  pinVee = vee;
+  pinRS = rs;
+  pinRW = rw;
+  pinEN = en;
+  pinD0 = d0;
+  pinD1 = d1;
+  pinD2 = d2;
+  pinD3 = d3;
+  pinD4 = d4;
+  pinD5 = d5;
+  pinD6 = d6;
+  pinD7 = d7;
+  pinLEDP = ledp;
+  pinLEDN = ledn;
+}
 
 //Call this in setup.
 void initLCD() {
@@ -88,7 +108,7 @@ void returnHome(){
 void sendChars(String strptr){
   int index = 0;
   _txtprep();
-  while(strptr[index] != '\0' || index == 40){
+  while(strptr[index] != '\0'){
     _sendByte(strptr[index++], 1);
   }
 }
@@ -104,11 +124,11 @@ void _sendByte(char data, int waittime){
   digitalWrite(pinD5, (data >> 5) % 2);
   digitalWrite(pinD6, (data >> 6) % 2);
   digitalWrite(pinD7, (data >> 7) % 2);
-  //delay(waittime); //Let the others catch up...
+  //delay(waittime); //Let the others catch up... (not needed, upon testing).
   digitalWrite(pinEN, 1);
   delay(waittime);
   digitalWrite(pinEN, 0);
-  //delay(1);
+  //delay(1); //Prevent spamming (not needed, upon testing).
   
 }
 
