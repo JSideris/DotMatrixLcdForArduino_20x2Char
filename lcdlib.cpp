@@ -1,50 +1,39 @@
 /*
-Copyright 2016 Joshua Sideris
+Copyright 2011 Joshua Sideris
 https://github.com/JSideris/
 Use for whatever you want. But use at own risk.
 */
 
-//A bunch of defaults that were convenient for the Arduino Mega.
-int pinVss = 52;
-int pinVcc = 50;
-int pinVee = 48;
-int pinRS = 46;
-int pinRW = 44;
-int pinEN = 42;
-int pinD0 = 40;
-int pinD1 = 38;
-int pinD2 = 36;
-int pinD3 = 34;
-int pinD4 = 32;
-int pinD5 = 30;
-int pinD6 = 28;
-int pinD7 = 26;
-int pinLEDP = 24;
-int pinLEDN = 22;
+#include "Arduino.h"
+#include "lcdlib.h"
 
+//A bunch of defaults that were convenient for the Arduino Mega.
+void LCDLib::setpins(){
+	setpins(52, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22);
+}
 
 //Call this before init if you want to change the defaults.
-void setPins(int vss, int vcc, int vee, int rs, int rw, int en, int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int ledp, int ledn){
-  pinVss = vss;
-  pinVcc = vcc;
-  pinVee = vee;
-  pinRS = rs;
-  pinRW = rw;
-  pinEN = en;
-  pinD0 = d0;
-  pinD1 = d1;
-  pinD2 = d2;
-  pinD3 = d3;
-  pinD4 = d4;
-  pinD5 = d5;
-  pinD6 = d6;
-  pinD7 = d7;
-  pinLEDP = ledp;
-  pinLEDN = ledn;
+void LCDLib::setpins(int pinVss, int pinVcc, int pinVee, int pinRS, int pinRW, int pinEN, int pinD0, int pinD1, int pinD2, int pinD3, int pinD4, int pinD5, int pinD6, int pinD7, int pinLEDP, int pinLEDN){
+	this->pinVss = pinVss;
+	this->pinVcc = pinVcc;
+	this->pinVee = pinVee;
+	this->pinRS = pinRS;
+	this->pinRW = pinRW;
+	this->pinEN = pinEN;
+	this->pinD0 = pinD0;
+	this->pinD1 = pinD1;
+	this->pinD2 = pinD2;
+	this->pinD3 = pinD3;
+	this->pinD4 = pinD4;
+	this->pinD5 = pinD5;
+	this->pinD6 = pinD6;
+	this->pinD7 = pinD7;
+	this->pinLEDP = pinLEDP;
+	this->pinLEDN = pinLEDN;
 }
 
 //Call this in setup.
-void initLCD() {
+void LCDLib::initLCD() {
   //Vss
   pinMode(pinVss, OUTPUT);
   digitalWrite(pinVss, LOW);
@@ -79,11 +68,12 @@ void initLCD() {
   pinMode(pinD6, OUTPUT);
   pinMode(pinD7, OUTPUT);
   
+  
   resetLCD();
 }
 
-//Resets.
-void resetLCD(){
+void LCDLib::resetLCD(){
+  
   pinMode(pinLEDN, OUTPUT); //Vcc
   digitalWrite(pinLEDN, LOW);
   pinMode(pinLEDP, OUTPUT); //Vcc
@@ -94,20 +84,23 @@ void resetLCD(){
   _sendByte(12, 100);
 }
 
-void setcurpos(int newpos){
+void LCDLib::setcurpos(int newpos){
   _cmdprep();
   _sendByte(128 + (newpos % 128), 1);
 }
 
-void returnHome(){
+void LCDLib::returnHome(){
   _cmdprep();
   _sendByte(2, 1);
 }
 
-//Write text at the current cursor position.
-void sendChars(String strptr){
+void LCDLib::printInt(int prInt){
+	sendChars(String(prInt, DEC));
+}
+
+void LCDLib::sendChars(String strptr){
   int index = 0;
-  _txtprep();
+  txtprep();
   while(strptr[index] != '\0'){
     _sendByte(strptr[index++], 1);
   }
@@ -115,7 +108,7 @@ void sendChars(String strptr){
 
 //Send one byte of data, which could be a little cleaner here but since the LCD can be plugged into arbitrary pins, 
 //they need to be set one at a time. Called internally.
-void _sendByte(char data, int waittime){
+void LCDLib::_sendByte(char data, int waittime){
   digitalWrite(pinD0, (data) % 2);
   digitalWrite(pinD1, (data >> 1) % 2);
   digitalWrite(pinD2, (data >> 2) % 2);
@@ -133,14 +126,13 @@ void _sendByte(char data, int waittime){
 }
 
 //Preps the LCD for command input. Called internally.
-void _cmdprep(){
+void LCDLib::_cmdprep(){
   digitalWrite(pinRS, 0);
   digitalWrite(pinRW, 0);
 }
 
 //Preps the LCD for text input. Called internally.
-void _txtprep(){
+void LCDLib::txtprep(){
   digitalWrite(pinRS, 1);
   digitalWrite(pinRW, 0);
 }
-
